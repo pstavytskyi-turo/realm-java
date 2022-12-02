@@ -21,7 +21,11 @@ import com.android.build.gradle.internal.publishing.AndroidArtifacts
 import io.realm.analytics.RealmAnalytics
 import io.realm.transformer.build.BuildTemplate
 import io.realm.transformer.build.FullBuild
-import io.realm.transformer.ext.*
+import io.realm.transformer.ext.getTargetSdk
+import io.realm.transformer.ext.getMinSdk
+import io.realm.transformer.ext.getBootClasspath
+import io.realm.transformer.ext.getAppId
+import io.realm.transformer.ext.getAgpVersion
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedArtifact

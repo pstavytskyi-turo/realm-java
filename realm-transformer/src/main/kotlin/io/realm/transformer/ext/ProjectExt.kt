@@ -18,10 +18,7 @@ package io.realm.transformer.ext
 
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.Project
-import org.gradle.api.file.ConfigurableFileCollection
 import java.io.File
-import java.io.FileInputStream
-import java.util.*
 
 /**
  * Attempts to determine the best possible unique AppId for this project.

@@ -15,7 +15,9 @@
  */
 package io.realm.analytics
 
-import io.realm.transformer.*
+import io.realm.transformer.ProjectMetaData
+import io.realm.transformer.CONNECT_TIMEOUT
+import io.realm.transformer.READ_TIMEOUT
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
