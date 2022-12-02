@@ -20,7 +20,7 @@ import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.internal.publishing.AndroidArtifacts
 import io.realm.transformer.build.BuildTemplate
 import io.realm.transformer.build.FullBuild
-import io.realm.transformer.ext.getAndroidJar
+import io.realm.transformer.ext.getBootClasspath
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
@@ -52,13 +52,13 @@ data class ProjectMetaData(val bootClassPath: Set<File>)
 /**
  * This class implements the Transform API provided by the Android Gradle plugin.
  */
-class RealmTransformer(androidJar: ConfigurableFileCollection,
+class RealmTransformer(bootClasspath: ConfigurableFileCollection,
                        private val inputs: ListProperty<Directory>,
                        private val allJars: ListProperty<RegularFile>,
                        private val referencedInputs: ConfigurableFileCollection,
                        private val output: RegularFileProperty) {
 
-    private val metadata = ProjectMetaData(bootClassPath = androidJar.files)
+    private val metadata = ProjectMetaData(bootClassPath = bootClasspath.files)
 
     companion object {
 
@@ -67,7 +67,7 @@ class RealmTransformer(androidJar: ConfigurableFileCollection,
             androidComponents.onVariants { variant ->
                 variant.components.forEach { component ->
                     val taskProvider =
-                        project.tasks.register<ModifyClassesTask>(
+                        project.tasks.register(
                             "${component.name}RealmAccessorsTransformer",
                             ModifyClassesTask::class.java
                         ) {
@@ -77,7 +77,7 @@ class RealmTransformer(androidJar: ConfigurableFileCollection,
                                     AndroidArtifacts.ArtifactType.CLASSES_JAR.type
                                 )
                             }.files)
-                            it.androidJar.setFrom(project.getAndroidJar())
+                            it.bootClasspath.setFrom(project.getBootClasspath())
                         }
                     component.artifacts.forScope(com.android.build.api.variant.ScopedArtifacts.Scope.PROJECT)
                         .use<ModifyClassesTask>(taskProvider)
@@ -154,14 +154,14 @@ abstract class ModifyClassesTask: DefaultTask() {
     abstract val allDirectories: ListProperty<Directory>
 
     @get:InputFiles
-    abstract val androidJar: ConfigurableFileCollection
+    abstract val bootClasspath: ConfigurableFileCollection
 
     @get:OutputFiles
     abstract val output: RegularFileProperty
 
     @TaskAction
     fun taskAction() {
-        RealmTransformer(androidJar, allDirectories, allJars, fullRuntimeClasspath, output).transform()
+        RealmTransformer(bootClasspath, allDirectories, allJars, fullRuntimeClasspath, output).transform()
     }
 }
 

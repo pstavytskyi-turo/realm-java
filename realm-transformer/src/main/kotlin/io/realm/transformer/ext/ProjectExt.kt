@@ -43,24 +43,10 @@ fun Project.getTargetSdk(): String {
 }
 
 /**
- * Returns the `targetSdk` property for this project if it is available.
- */
-fun Project.getTargetSdkOrNull(): String? {
-    return getAndroidExtension(this).defaultConfig.targetSdkVersion?.apiString
-}
-
-/**
  * Returns the `minSdk` property for this project if it is available.
  */
 fun Project.getMinSdk(): String {
     return getAndroidExtension(this).defaultConfig.minSdkVersion?.apiString ?: "unknown"
-}
-
-/**
- * Returns the `minSdk` property for this project if it is available.
- */
-fun Project.getMinSdkOrNull(): String? {
-    return getAndroidExtension(this).defaultConfig.minSdkVersion?.apiString
 }
 
 /**
@@ -95,43 +81,6 @@ fun Project.getAgpVersion(): String {
  */
 fun Project.getBootClasspath(): List<File> {
     return getAndroidExtension(this).bootClasspath
-}
-
-fun Project.getAndroidJar(): ConfigurableFileCollection {
-    val sdk = getTargetSdkOrNull() ?: error("Unable to find Android SDK version")
-    return project.files("${findAndroidSdkLocation()}/platforms/android-$sdk/android.jar")
-}
-
-fun Project.findAndroidSdkLocation(): File {
-    val localProperties = File(rootDir, "local.properties")
-    if (localProperties.exists()) {
-        val properties = Properties()
-        FileInputStream(localProperties).use { instr ->
-            properties.load(instr)
-        }
-        var sdkDirProp = properties.getProperty("sdk.dir")
-        return if (sdkDirProp != null) {
-            File(sdkDirProp)
-        } else {
-            sdkDirProp = properties.getProperty("android.dir")
-            if (sdkDirProp != null) {
-                File(rootDir, sdkDirProp)
-            } else {
-                error("No sdk.dir property defined in local.properties file.")
-            }
-        }
-    } else {
-        val envVar = System.getenv("ANDROID_HOME")
-        if (envVar != null) {
-            return File(envVar)
-        } else {
-            val property = System.getProperty("android.home")
-            if (property != null) {
-                return File(property)
-            }
-        }
-    }
-    error("Can't find SDK path")
 }
 
 private fun getAndroidExtension(project: Project): BaseExtension {
